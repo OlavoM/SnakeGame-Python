@@ -11,6 +11,7 @@ redColour = pygame.Color(255, 0, 0)
 blackColour = pygame.Color(0, 0, 0)
 whiteColour = pygame.Color(255, 255, 255)
 greyColour = pygame.Color(150, 150, 150)
+greenColour = pygame.Color(0,200,0)
 
 snakePosition = [100, 100]
 snakeSegments = [[100,100],[80,100],[60,100]]
@@ -80,9 +81,9 @@ while True:
             fruitPosition = [x*20, y*20]
             fruitSpawned=1
     
-    playSurface.fill(blackColour)
+    playSurface.fill(whiteColour)
     for position in snakeSegments:
-            pygame.draw.rect(playSurface, whiteColour, Rect(position[0], position[1], 20, 20))
+            pygame.draw.rect(playSurface, greenColour, Rect(position[0], position[1], 20, 20))
     pygame.draw.rect(playSurface, redColour, Rect(fruitPosition[0], fruitPosition[1], 20, 20))
     pygame.display.flip()
     
