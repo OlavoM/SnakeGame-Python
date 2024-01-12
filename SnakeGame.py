@@ -4,7 +4,7 @@ from pygame.locals import *
 pygame.init()
 fpsClock = pygame.time.Clock()
 
-# Controller
+# Xbox Controller
 pygame.joystick.init()
 joystick_count = pygame.joystick.get_count()
 joystick = pygame.joystick.Joystick(0)
@@ -38,25 +38,56 @@ def gameOver():
     pygame.quit()
     sys.exit()
 
+def getDPadDirection():
+    d_pad = (joystick.get_hat(0)[0], joystick.get_hat(0)[1])
+    if d_pad == (1, 0):
+        return "right"
+    elif d_pad == (-1, 0):
+        return "left"
+    elif d_pad == (0, 1):
+        return "up"
+    elif d_pad == (0, -1):
+        return "down"
+
+def getKeyDirection():
+    if event.key==K_RIGHT or event.key==ord("d"):
+        return "right"
+    if event.key==K_LEFT or event.key==ord("a"):
+        return "left"
+    if event.key==K_UP or event.key==ord("w"):
+        return "up"
+    if event.key==K_DOWN or event.key==ord("s"):
+        return "down"
+    if event.key==K_ESCAPE:
+        pygame.event.post(pygame.event.Event(QUIT))
+
+def getAnalogStickDirection():
+    x_axis = joystick.get_axis(0)
+    y_axis = joystick.get_axis(1)
+
+    # Threshold for avoid direction detection mistakes (analogic dead zone)
+    threshold = 0.3
+
+    if x_axis > threshold:
+        return "right"
+    elif x_axis < -threshold:
+        return "left"
+    elif y_axis > threshold:
+        return "down"
+    elif y_axis < -threshold:
+        return "up"
 
 while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-
         elif event.type == pygame.JOYHATMOTION:
-            d_pad = (joystick.get_hat(0)[0], joystick.get_hat(0)[1])
-            if d_pad == (1, 0):
-                changeDirection = "right"
-            elif d_pad == (-1, 0):
-                changeDirection = "left"
-            elif d_pad == (0, 1):
-                changeDirection = "up"
-            elif d_pad == (0, -1):
-                changeDirection = "down"
-        #if event.key==K_ESCAPE:
-        #    pygame.event.post(pygame.event.Event(QUIT))
+            changeDirection = getDPadDirection()
+        elif event.type == KEYDOWN:
+            changeDirection = getKeyDirection()
+        elif event.type == pygame.JOYAXISMOTION:
+            changeDirection = getAnalogStickDirection()
         
     if changeDirection=="right" and not(direction=="left"):
             direction = changeDirection
@@ -79,29 +110,29 @@ while True:
     snakeSegments.insert(0, list(snakePosition))
     
     if snakePosition[0]==fruitPosition[0] and snakePosition[1]==fruitPosition[1]:
-            fruitSpawned = 0
+        fruitSpawned = 0
     else:
-            snakeSegments.pop()
+        snakeSegments.pop()
     
     if fruitSpawned==0:
-            x = random.randrange(1,32)
-            y = random.randrange(1,24)
-            fruitPosition = [x*20, y*20]
-            fruitSpawned=1
+        x = random.randrange(1,32)
+        y = random.randrange(1,24)
+        fruitPosition = [x*20, y*20]
+        fruitSpawned=1
     
     playSurface.fill(whiteColour)
     for position in snakeSegments:
-            pygame.draw.rect(playSurface, greenColour, Rect(position[0], position[1], 20, 20))
+        pygame.draw.rect(playSurface, greenColour, Rect(position[0], position[1], 20, 20))
     pygame.draw.rect(playSurface, redColour, Rect(fruitPosition[0], fruitPosition[1], 20, 20))
     pygame.display.flip()
     
     if snakePosition[0]>620 or snakePosition[0]<0:
-            gameOver()
+        gameOver()
     if snakePosition[1]>460 or snakePosition[1]<0:
-            gameOver()
+        gameOver()
     
     for snakeBody in snakeSegments[1:]:
-            if snakePosition[0]==snakeBody[0] and snakePosition[1]==snakeBody[1]:
-                    gameOver()
+        if snakePosition[0]==snakeBody[0] and snakePosition[1]==snakeBody[1]:
+            gameOver()
     
     fpsClock.tick(20)
