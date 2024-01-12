@@ -4,6 +4,12 @@ from pygame.locals import *
 pygame.init()
 fpsClock = pygame.time.Clock()
 
+# Controller
+pygame.joystick.init()
+joystick_count = pygame.joystick.get_count()
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
+
 playSurface = pygame.display.set_mode((640,480))
 pygame.display.set_caption("Snake Game")
 
@@ -38,17 +44,19 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        elif event.type == KEYDOWN:
-            if event.key==K_RIGHT or event.key==ord("d"):
+
+        elif event.type == pygame.JOYHATMOTION:
+            d_pad = (joystick.get_hat(0)[0], joystick.get_hat(0)[1])
+            if d_pad == (1, 0):
                 changeDirection = "right"
-            if event.key==K_LEFT or event.key==ord("a"):
+            elif d_pad == (-1, 0):
                 changeDirection = "left"
-            if event.key==K_UP or event.key==ord("w"):
+            elif d_pad == (0, 1):
                 changeDirection = "up"
-            if event.key==K_DOWN or event.key==ord("s"):
+            elif d_pad == (0, -1):
                 changeDirection = "down"
-            if event.key==K_ESCAPE:
-                pygame.event.post(pygame.event.Event(QUIT))
+        #if event.key==K_ESCAPE:
+        #    pygame.event.post(pygame.event.Event(QUIT))
         
     if changeDirection=="right" and not(direction=="left"):
             direction = changeDirection
