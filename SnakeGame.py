@@ -68,13 +68,16 @@ def getAnalogStickDirection():
     # Threshold for avoid direction detection mistakes (analogic dead zone)
     threshold = 0.3
 
-    if x_axis > threshold:
+    # Diagonal threshold
+    dThreshold = 0.5
+
+    if x_axis > threshold and y_axis < dThreshold and y_axis > -dThreshold:
         return "right"
-    elif x_axis < -threshold:
+    elif x_axis < -threshold and y_axis < dThreshold and y_axis > -dThreshold:
         return "left"
-    elif y_axis > threshold:
+    elif y_axis > threshold and x_axis < dThreshold and x_axis > -dThreshold:
         return "down"
-    elif y_axis < -threshold:
+    elif y_axis < -threshold and x_axis < dThreshold and x_axis > -dThreshold:
         return "up"
 
 while True:
