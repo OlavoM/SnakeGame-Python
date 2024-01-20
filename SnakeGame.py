@@ -1,5 +1,6 @@
 import pygame, sys, time, random
 from pygame.locals import *
+from enum import Enum
 
 pygame.init()
 fpsClock = pygame.time.Clock()
@@ -13,6 +14,12 @@ joystick.init()
 playSurface = pygame.display.set_mode((640,480))
 pygame.display.set_caption("Snake Game")
 
+class Direction(Enum):
+    UP = "up"
+    DOWN = "down"
+    RIGHT = "right"
+    LEFT = "left"
+
 redColour = pygame.Color(255, 0, 0)    
 blackColour = pygame.Color(0, 0, 0)
 whiteColour = pygame.Color(255, 255, 255)
@@ -23,7 +30,7 @@ snakePosition = [100, 100]
 snakeSegments = [[100,100],[80,100],[60,100]]
 fruitPosition = [300,300]
 fruitSpawned = 1
-direction = "right"
+direction = Direction.RIGHT
 changeDirection = direction    
 
 
@@ -41,23 +48,23 @@ def gameOver():
 def getDPadDirection():
     d_pad = (joystick.get_hat(0)[0], joystick.get_hat(0)[1])
     if d_pad == (1, 0):
-        return "right"
+        return Direction.RIGHT
     elif d_pad == (-1, 0):
-        return "left"
+        return Direction.LEFT
     elif d_pad == (0, 1):
-        return "up"
+        return Direction.UP
     elif d_pad == (0, -1):
-        return "down"
+        return Direction.DOWN
 
 def getKeyDirection():
     if event.key==K_RIGHT or event.key==ord("d"):
-        return "right"
+        return Direction.RIGHT
     if event.key==K_LEFT or event.key==ord("a"):
-        return "left"
+        return Direction.LEFT
     if event.key==K_UP or event.key==ord("w"):
-        return "up"
+        return Direction.UP
     if event.key==K_DOWN or event.key==ord("s"):
-        return "down"
+        return Direction.DOWN
     if event.key==K_ESCAPE:
         pygame.event.post(pygame.event.Event(QUIT))
 
@@ -72,13 +79,13 @@ def getAnalogStickDirection():
     dThreshold = 0.5
 
     if x_axis > threshold and y_axis < dThreshold and y_axis > -dThreshold:
-        return "right"
+        return Direction.RIGHT
     elif x_axis < -threshold and y_axis < dThreshold and y_axis > -dThreshold:
-        return "left"
+        return Direction.LEFT
     elif y_axis > threshold and x_axis < dThreshold and x_axis > -dThreshold:
-        return "down"
+        return Direction.DOWN
     elif y_axis < -threshold and x_axis < dThreshold and x_axis > -dThreshold:
-        return "up"
+        return Direction.UP
 
 while True:
     for event in pygame.event.get():
@@ -92,22 +99,22 @@ while True:
         elif event.type == pygame.JOYAXISMOTION:
             changeDirection = getAnalogStickDirection()
         
-    if changeDirection=="right" and not(direction=="left"):
+    if changeDirection==Direction.RIGHT and not(direction==Direction.LEFT):
             direction = changeDirection
-    if changeDirection=="left" and not(direction=="right"):
+    if changeDirection==Direction.LEFT and not(direction==Direction.RIGHT):
             direction = changeDirection
-    if changeDirection=="up" and not(direction=="down"):
+    if changeDirection==Direction.UP and not(direction==Direction.DOWN):
             direction = changeDirection
-    if changeDirection=="down" and not(direction=="up"):
+    if changeDirection==Direction.DOWN and not(direction==Direction.UP):
             direction = changeDirection
     
-    if direction=="right":
+    if direction==Direction.RIGHT:
             snakePosition[0] += 20
-    if direction=="left":
+    if direction==Direction.LEFT:
             snakePosition[0] -= 20
-    if direction=="up":
+    if direction==Direction.UP:
             snakePosition[1] -= 20
-    if direction=="down":
+    if direction==Direction.DOWN:
             snakePosition[1] += 20
     
     snakeSegments.insert(0, list(snakePosition))
@@ -138,4 +145,4 @@ while True:
         if snakePosition[0]==snakeBody[0] and snakePosition[1]==snakeBody[1]:
             gameOver()
     
-    fpsClock.tick(20)
+    fpsClock.tick(18)
