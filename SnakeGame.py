@@ -5,12 +5,6 @@ from enum import Enum
 pygame.init()
 fpsClock = pygame.time.Clock()
 
-# Xbox Controller
-pygame.joystick.init()
-joystick_count = pygame.joystick.get_count()
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
-
 playSurface = pygame.display.set_mode((640,480))
 pygame.display.set_caption("Snake Game")
 
@@ -33,6 +27,17 @@ fruitSpawned = 1
 direction = Direction.RIGHT
 changeDirection = direction    
 
+# Xbox Controller
+pygame.joystick.init()
+joystick_count = pygame.joystick.get_count()
+joystick = pygame.joystick.Joystick(0)
+joystick.init()
+
+# Audio mixer for bg music
+pygame.mixer.init()
+pygame.mixer.music.load("bg_music/Blue Danube Strauss (No Copyright Music).mp3")
+pygame.mixer.music.set_volume(1.0)
+pygame.mixer.music.play(-1) # Continuos replay
 
 def gameOver():
     gameOverFont = pygame.font.Font("freesansbold.ttf", 72)
