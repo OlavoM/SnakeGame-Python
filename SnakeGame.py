@@ -2,34 +2,16 @@ import pygame, sys, time, random
 from pygame.locals import *
 from enum import Enum
 
+pygame.init()
+playSurface = pygame.display.set_mode((640,480))
+pygame.display.set_caption("Snake Game")
+
+
 class Direction(Enum):
     UP = "up"
     DOWN = "down"
     RIGHT = "right"
     LEFT = "left"
-
-pygame.init()
-
-playSurface = pygame.display.set_mode((640,480))
-pygame.display.set_caption("Snake Game")
-
-redColour = pygame.Color(255, 0, 0)    
-blackColour = pygame.Color(0, 0, 0)
-whiteColour = pygame.Color(255, 255, 255)
-greyColour = pygame.Color(150, 150, 150)
-greenColour = pygame.Color(0,200,0)
-
-# Xbox Controller
-pygame.joystick.init()
-joystick_count = pygame.joystick.get_count()
-joystick = pygame.joystick.Joystick(0)
-joystick.init()
-
-# Audio mixer for bg music
-pygame.mixer.init()
-pygame.mixer.music.load("bg_music/Blue Danube Strauss (No Copyright Music).mp3")
-pygame.mixer.music.set_volume(1.0)
-pygame.mixer.music.play(-1) # Continuos replay
 
 
 def setConfig():
@@ -43,6 +25,37 @@ def setConfig():
     changeDirection = direction
 
     return playSurface, fpsClock, snakePosition, snakeSegments, fruitPosition, fruitSpawned, direction, changeDirection
+
+
+def joystickConnected():
+    # Xbox Controller
+    global joystick
+    pygame.joystick.init()
+    joystick_count = pygame.joystick.get_count()
+    if joystick_count == 0:
+        return False
+    else:
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+        return True
+
+
+def setBackgroundMusic():
+    # Audio mixer for bg music
+    pygame.mixer.init()
+    pygame.mixer.music.load("bg_music/Blue Danube Strauss (No Copyright Music).mp3")
+    pygame.mixer.music.set_volume(1.0)
+    pygame.mixer.music.play(-1) # Continuos replay
+
+
+def setColours():
+    global redColour, blackColour, whiteColour, greyColour, greenColour
+    redColour = pygame.Color(255, 0, 0)    
+    blackColour = pygame.Color(0, 0, 0)
+    whiteColour = pygame.Color(255, 255, 255)
+    greyColour = pygame.Color(150, 150, 150)
+    greenColour = pygame.Color(0,200,0)
+
 
 def gameOver():
     gameOverFont = pygame.font.Font("freesansbold.ttf", 72)
@@ -68,7 +81,7 @@ def getDPadDirection():
         return Direction.DOWN
 
 
-def getKeyDirection():
+def getKeyDirection(event):
     if event.key==K_RIGHT or event.key==ord("d"):
         return Direction.RIGHT
     if event.key==K_LEFT or event.key==ord("a"):
@@ -100,18 +113,18 @@ def getAnalogStickDirection():
     elif y_axis < -threshold and x_axis < dThreshold and x_axis > -dThreshold:
         return Direction.UP
 
-def main(config):
+def main(config, joystickConnected):
     playSurface, fpsClock, snakePosition, snakeSegments, fruitPosition, fruitSpawned, direction, changeDirection = config
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.JOYHATMOTION:
-                changeDirection = getDPadDirection()
             elif event.type == KEYDOWN:
-                changeDirection = getKeyDirection()
-            elif event.type == pygame.JOYAXISMOTION:
+                changeDirection = getKeyDirection(event)
+            elif joystickConnected and (event.type == pygame.JOYHATMOTION):
+                changeDirection = getDPadDirection()
+            elif joystickConnected and event.type == pygame.JOYAXISMOTION:
                 changeDirection = getAnalogStickDirection()
             
         if changeDirection==Direction.RIGHT and not(direction==Direction.LEFT):
@@ -163,5 +176,8 @@ def main(config):
         fpsClock.tick(18)
 
 
+setBackgroundMusic()
+setColours()
 configValues = setConfig()
-main(configValues)
+hasJoystick = joystickConnected()
+main(configValues, hasJoystick)
