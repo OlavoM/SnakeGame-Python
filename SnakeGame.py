@@ -113,6 +113,7 @@ def getAnalogStickDirection():
     elif y_axis < -threshold and x_axis < dThreshold and x_axis > -dThreshold:
         return Direction.UP
 
+
 def main(config, joystickConnected):
     playSurface, fpsClock, snakePosition, snakeSegments, fruitPosition, fruitSpawned, direction, changeDirection = config
     while True:

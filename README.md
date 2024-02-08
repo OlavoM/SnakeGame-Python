@@ -1,6 +1,8 @@
 # SnakeGame-Python
 Snake Game writen in PyGame with controller support (XBox like) 
 
+![Gameplay](https://github.com/OlavoM/SnakeGame-Python/assets/54750022/ba246a0d-e40f-4141-a05a-2275baaa5966)
+
 <br>
 
 ### TO DO:
